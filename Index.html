@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ganha um chocolate</title>
+  <style>
+    :root {
+      --bg: #0f0f11;
+      --surface: #1a1a1f;
+      --border: #2a2a32;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --accent: #e8ff47;
+      --accent2: #47c8ff;
+      --green: #47ffb0;
+      --red: #ff6b47;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(180deg, rgba(26,26,31,0.98) 0%, rgba(18,18,22,0.98) 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+      background-size: 26px 26px;
+      pointer-events: none;
+    }
+
+    .inner { position: relative; z-index: 2; }
+
+    .tag {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 32px;
+      line-height: 1.05;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 15px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      background: var(--accent);
+      color: #111;
+      margin-top: 16px;
+    }
+
+    .code-box {
+      margin-top: 20px;
+      background: #0b0b0d;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .code-label {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .code {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--accent2);
+      letter-spacing: 5px;
+    }
+
+    .ok {
+      color: var(--green);
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    .warn {
+      color: var(--red);
+      font-weight: 700;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="inner" id="app"></div>
+  </div>
+
+  <script>
+    const API_URL = "COLOCA_AQUI_O_APPS_SCRIPT_URL";
+    const EVENT_ID = "demo_apresentacao";
+    const STORAGE_KEY = "demo_chocolate_code";
+
+    function uid() {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        const v = c === "x" ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function shortCode(token) {
+      return token.replace(/-/g, "").slice(-6).toUpperCase();
+    }
+
+    function renderHome() {
+      const existing = localStorage.getItem(STORAGE_KEY);
+      if (existing) {
+        renderCode(existing, true);
+        return;
+      }
+
+      document.getElementById("app").innerHTML = `
+        <div class="tag">APRESENTAÇÃO · DEMO</div>
+        <h1>Ganha um chocolate</h1>
+        <p>Lê o QR, regista-te e guarda o teu código. No fim, mostra-o para receberes o teu chocolate.</p>
+        <button class="btn" onclick="registar()">Quero participar</button>
+      `;
+    }
+
+    function renderCode(code, existing=false) {
+      document.getElementById("app").innerHTML = `
+        <div class="tag">APRESENTAÇÃO · DEMO</div>
+        <h1>${existing ? "Já estás registado" : "Estás dentro"}</h1>
+        <p>Guarda este código. No fim da apresentação, mostra-o para receberes o teu chocolate.</p>
+        <div class="code-box">
+          <div class="code-label">O TEU CÓDIGO</div>
+          <div class="code">${code}</div>
+        </div>
+        <div class="ok">${existing ? "Código recuperado deste telemóvel." : "Registo feito com sucesso."}</div>
+      `;
+    }
+
+    async function registar() {
+      const token = uid();
+      const code = shortCode(token);
+      const now = new Date();
+
+      const payload = {
+        event_id: EVENT_ID,
+        token_id: token,
+        codigo_curto: code,
+        registo_ts: now.toISOString(),
+        registo_local: now.toLocaleString("pt-PT"),
+        origem: "qr_demo"
+      };
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        localStorage.setItem(STORAGE_KEY, code);
+        renderCode(code, false);
+      } catch (e) {
+        document.getElementById("app").innerHTML = `
+          <div class="tag">APRESENTAÇÃO · DEMO</div>
+          <h1>Falha no registo</h1>
+          <p>Tenta novamente dentro de alguns segundos.</p>
+          <div class="warn">O servidor não confirmou o registo.</div>
+        `;
+      }
+    }
+
+    renderHome();
+  </script>
+</body>
+</html>
