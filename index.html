@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ganha um chocolate</title>
+
+  <title>Agent Q · Chocolate Challenge</title>
+
   <style>
     :root {
       --bg: #0f0f11;
@@ -17,9 +19,14 @@
       --red: #ff6b47;
     }
 
-    * { box-sizing: border-box; }
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
@@ -28,16 +35,31 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .card {
       width: 100%;
-      max-width: 420px;
-      background: linear-gradient(180deg, rgba(26,26,31,0.98) 0%, rgba(18,18,22,0.98) 100%);
+      max-width: 430px;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 28px;
+      padding: 34px 28px;
       position: relative;
+      z-index: 2;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
       overflow: hidden;
     }
 
@@ -46,94 +68,151 @@
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
-      background-size: 26px 26px;
+        linear-gradient(rgba(232,255,71,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,71,0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
       pointer-events: none;
     }
 
-    .inner { position: relative; z-index: 2; }
+    .inner {
+      position: relative;
+      z-index: 2;
+    }
 
-    .tag {
+    .label {
       color: var(--accent);
-      font-size: 12px;
+      font-size: 11px;
+      letter-spacing: 3px;
       font-weight: 700;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
     }
 
     h1 {
-      margin: 0 0 10px 0;
-      font-size: 32px;
+      font-size: 34px;
       line-height: 1.05;
+      margin-bottom: 12px;
+      font-weight: 800;
     }
 
     p {
       color: var(--muted);
-      line-height: 1.5;
       font-size: 15px;
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+
+    .icon {
+      font-size: 54px;
+      margin-bottom: 18px;
+      line-height: 1;
     }
 
     .btn {
       width: 100%;
-      padding: 16px;
-      border: none;
+      padding: 18px;
       border-radius: 14px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: 700;
+      border: none;
       background: var(--accent);
       color: #111;
-      margin-top: 16px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+      opacity: 0.88;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
     }
 
     .code-box {
-      margin-top: 20px;
       background: #0b0b0d;
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 18px;
+      padding: 20px;
+      margin-top: 18px;
       text-align: center;
     }
 
     .code-label {
       color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 1.5px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
     .code {
-      font-size: 34px;
-      font-weight: 800;
       color: var(--accent2);
+      font-size: 38px;
       letter-spacing: 5px;
+      font-weight: 900;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 10px;
+      line-height: 1.45;
     }
 
     .ok {
       color: var(--green);
       font-weight: 700;
-      margin-top: 12px;
+      margin-top: 16px;
+      font-size: 14px;
     }
 
-    .warn {
+    .error {
       color: var(--red);
       font-weight: 700;
-      margin-top: 12px;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 14px;
+      margin-bottom: 0;
     }
   </style>
 </head>
+
 <body>
   <div class="card">
     <div class="inner" id="app"></div>
   </div>
 
   <script>
-    const API_URL = const API_URL = "https://script.google.com/macros/s/AKfycbwf27iC8Y_iczVpY6FsFHVvPzX4v8RkLYbAnvQoC-Uhc5QXzLYIVRkZb5tV49R--ubwAw/exec";
-    const EVENT_ID = "demo_apresentacao";
-    const STORAGE_KEY = "demo_chocolate_code";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwf27iC8Y_iczVpY6FsFHVvPzX4v8RkLYbAnvQoC-Uhc5QXzLYIVRkZb5tV49R--ubwAw/exec";
 
-    function uid() {
+    const EVENT_ID = "demo_apresentacao_chocolate";
+    const STORAGE_TOKEN = "demo_chocolate_token_v3";
+    const STORAGE_CODE = "demo_chocolate_code_v3";
+
+    function gerarToken() {
       return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
         const r = Math.random() * 16 | 0;
         const v = c === "x" ? r : (r & 0x3 | 0x8);
@@ -141,41 +220,80 @@
       });
     }
 
-    function shortCode(token) {
+    function gerarCodigoCurto(token) {
       return token.replace(/-/g, "").slice(-6).toUpperCase();
     }
 
     function renderHome() {
-      const existing = localStorage.getItem(STORAGE_KEY);
-      if (existing) {
-        renderCode(existing, true);
+      const token = localStorage.getItem(STORAGE_TOKEN);
+      const code = localStorage.getItem(STORAGE_CODE);
+
+      if (token && code) {
+        renderCode(code);
         return;
       }
 
       document.getElementById("app").innerHTML = `
-        <div class="tag">APRESENTAÇÃO · DEMO</div>
-        <h1>Ganha um chocolate</h1>
-        <p>Lê o QR, regista-te e guarda o teu código. No fim, mostra-o para receberes o teu chocolate.</p>
+        <div class="label">Agent Q · Demo</div>
+        <div class="icon">🍫</div>
+        <h1>Lê o QR e entra no sorteio</h1>
+        <p>
+          Regista a tua presença nesta pequena experiência.
+          Vais receber um código para guardar até ao final do evento.
+        </p>
         <button class="btn" onclick="registar()">Quero participar</button>
+        <button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>
       `;
     }
 
-    function renderCode(code, existing=false) {
+    function renderLoading() {
       document.getElementById("app").innerHTML = `
-        <div class="tag">APRESENTAÇÃO · DEMO</div>
-        <h1>${existing ? "Já estás registado" : "Estás dentro"}</h1>
-        <p>Guarda este código. No fim da apresentação, mostra-o para receberes o teu chocolate.</p>
+        <div class="label">Agent Q · Demo</div>
+        <div class="icon">⏳</div>
+        <h1>A registar...</h1>
+        <p>Estamos a gerar o teu código.</p>
+      `;
+    }
+
+    function renderCode(code) {
+      document.getElementById("app").innerHTML = `
+        <div class="label">Agent Q · Demo</div>
+        <div class="icon">🎟️</div>
+        <h1>Estás registado</h1>
+        <p>Guarda este código até ao final do evento.</p>
+
         <div class="code-box">
-          <div class="code-label">O TEU CÓDIGO</div>
+          <div class="code-label">O teu código</div>
           <div class="code">${code}</div>
+          <div class="hint">
+            No final do evento, se o teu código tiver sido o escolhido,
+            vem ter com a equipa Agent Q para receberes o chocolate.
+          </div>
         </div>
-        <div class="ok">${existing ? "Código recuperado deste telemóvel." : "Registo feito com sucesso."}</div>
+
+        <div class="ok">Registo concluído.</div>
+
+        <button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>
+      `;
+    }
+
+    function renderError(message = "O registo não foi confirmado.") {
+      document.getElementById("app").innerHTML = `
+        <div class="label">Agent Q · Demo</div>
+        <div class="icon">⚠️</div>
+        <h1>Não foi possível registar</h1>
+        <p>Verifica a ligação à internet e tenta novamente.</p>
+        <div class="error">${message}</div>
+        <button class="btn-secondary" onclick="renderHome()">Voltar</button>
+        <button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>
       `;
     }
 
     async function registar() {
-      const token = uid();
-      const code = shortCode(token);
+      renderLoading();
+
+      const token = gerarToken();
+      const code = gerarCodigoCurto(token);
       const now = new Date();
 
       const payload = {
@@ -184,7 +302,8 @@
         codigo_curto: code,
         registo_ts: now.toISOString(),
         registo_local: now.toLocaleString("pt-PT"),
-        origem: "qr_demo"
+        origem: "qr_demo_chocolate",
+        claimed: "nao"
       };
 
       try {
@@ -197,16 +316,20 @@
           body: JSON.stringify(payload)
         });
 
-        localStorage.setItem(STORAGE_KEY, code);
-        renderCode(code, false);
+        localStorage.setItem(STORAGE_TOKEN, token);
+        localStorage.setItem(STORAGE_CODE, code);
+
+        renderCode(code);
+
       } catch (e) {
-        document.getElementById("app").innerHTML = `
-          <div class="tag">APRESENTAÇÃO · DEMO</div>
-          <h1>Falha no registo</h1>
-          <p>Tenta novamente dentro de alguns segundos.</p>
-          <div class="warn">O servidor não confirmou o registo.</div>
-        `;
+        renderError();
       }
+    }
+
+    function resetLocal() {
+      localStorage.removeItem(STORAGE_TOKEN);
+      localStorage.removeItem(STORAGE_CODE);
+      renderHome();
     }
 
     renderHome();
