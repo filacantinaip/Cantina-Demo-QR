@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Agent Q · Chocolate Challenge</title>
 
   <style>
@@ -115,6 +116,9 @@
       font-weight: 800;
       cursor: pointer;
       margin-top: 4px;
+      text-align: center;
+      text-decoration: none;
+      display: block;
     }
 
     .btn-secondary {
@@ -128,6 +132,19 @@
       font-weight: 600;
       cursor: pointer;
       margin-top: 14px;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    .btn-dashboard {
+      border-color: var(--accent2);
+      color: var(--accent2);
     }
 
     .code-box {
@@ -189,10 +206,11 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwf27iC8Y_iczVpY6FsFHVvPzX4v8RkLYbAnvQoC-Uhc5QXzLYIVRkZb5tV49R--ubwAw/exec";
+    const DASHBOARD_URL = "https://demo-chocolate-dashboard.streamlit.app/";
 
     const EVENT_ID = "demo_apresentacao_chocolate";
-    const STORAGE_TOKEN = "demo_chocolate_token_v4";
-    const STORAGE_CODE = "demo_chocolate_code_v4";
+    const STORAGE_TOKEN = "demo_chocolate_token_v5";
+    const STORAGE_CODE = "demo_chocolate_code_v5";
 
     function gerarToken() {
       return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
@@ -204,6 +222,10 @@
 
     function gerarCodigoCurto(token) {
       return token.replace(/-/g, "").slice(-6).toUpperCase();
+    }
+
+    function dashboardButton() {
+      return '<a class="btn-secondary btn-dashboard" href="' + DASHBOARD_URL + '" target="_blank" rel="noopener noreferrer">Ver dashboard dos resultados</a>';
     }
 
     function renderHome() {
@@ -221,6 +243,7 @@
         '<h1>Lê o QR e entra no sorteio</h1>' +
         '<p>Regista a tua presença nesta pequena experiência. Vais receber um código para guardar até ao final do evento.</p>' +
         '<button class="btn" onclick="registar()">Quero participar</button>' +
+        dashboardButton() +
         '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
     }
 
@@ -244,6 +267,7 @@
           '<div class="hint">No final do evento, se o teu código tiver sido o escolhido, vem ter com a equipa Agent Q para receberes o chocolate.</div>' +
         '</div>' +
         '<div class="ok">Registo concluído.</div>' +
+        dashboardButton() +
         '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
     }
 
@@ -254,6 +278,7 @@
         '<h1>Não foi possível registar</h1>' +
         '<p>Verifica a ligação à internet e tenta novamente.</p>' +
         '<div class="error">' + (message || "O registo não foi confirmado.") + '</div>' +
+        dashboardButton() +
         '<button class="btn-secondary" onclick="renderHome()">Voltar</button>' +
         '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
     }
