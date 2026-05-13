@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Q · Chocolate Challenge</title>
 
   <style>
@@ -12,7 +11,7 @@
       --surface: #1a1a1f;
       --border: #2a2a32;
       --text: #e8e8f0;
-      --muted: #6b6b80;
+      --muted: #8a8aa0;
       --accent: #e8ff47;
       --accent2: #47c8ff;
       --green: #47ffb0;
@@ -23,19 +22,17 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
-      overflow: hidden;
     }
 
     body::before {
@@ -47,7 +44,6 @@
         linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
       background-size: 36px 36px;
       pointer-events: none;
-      z-index: 0;
     }
 
     .card {
@@ -58,7 +54,7 @@
       border-radius: 24px;
       padding: 34px 28px;
       position: relative;
-      z-index: 2;
+      z-index: 1;
       box-shadow: 0 24px 80px rgba(0,0,0,0.45);
       overflow: hidden;
     }
@@ -88,8 +84,14 @@
       margin-bottom: 14px;
     }
 
+    .icon {
+      font-size: 54px;
+      margin-bottom: 18px;
+      line-height: 1;
+    }
+
     h1 {
-      font-size: 34px;
+      font-size: 32px;
       line-height: 1.05;
       margin-bottom: 12px;
       font-weight: 800;
@@ -102,12 +104,6 @@
       margin-bottom: 24px;
     }
 
-    .icon {
-      font-size: 54px;
-      margin-bottom: 18px;
-      line-height: 1;
-    }
-
     .btn {
       width: 100%;
       padding: 18px;
@@ -118,12 +114,7 @@
       font-size: 18px;
       font-weight: 800;
       cursor: pointer;
-      transition: transform 0.15s, opacity 0.15s;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-      opacity: 0.88;
+      margin-top: 4px;
     }
 
     .btn-secondary {
@@ -137,12 +128,6 @@
       font-weight: 600;
       cursor: pointer;
       margin-top: 14px;
-      transition: border-color 0.15s, color 0.15s;
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--accent2);
-      color: var(--accent2);
     }
 
     .code-box {
@@ -189,31 +174,28 @@
       margin-top: 16px;
       font-size: 14px;
     }
-
-    .small-note {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
-      margin-top: 14px;
-      margin-bottom: 0;
-    }
   </style>
 </head>
 
 <body>
   <div class="card">
-    <div class="inner" id="app"></div>
+    <div class="inner" id="app">
+      <div class="label">Agent Q · Demo</div>
+      <div class="icon">🍫</div>
+      <h1>Lê o QR e entra no sorteio</h1>
+      <p>A carregar...</p>
+    </div>
   </div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwf27iC8Y_iczVpY6FsFHVvPzX4v8RkLYbAnvQoC-Uhc5QXzLYIVRkZb5tV49R--ubwAw/exec";
 
     const EVENT_ID = "demo_apresentacao_chocolate";
-    const STORAGE_TOKEN = "demo_chocolate_token_v3";
-    const STORAGE_CODE = "demo_chocolate_code_v3";
+    const STORAGE_TOKEN = "demo_chocolate_token_v4";
+    const STORAGE_CODE = "demo_chocolate_code_v4";
 
     function gerarToken() {
-      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0;
         const v = c === "x" ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -233,60 +215,47 @@
         return;
       }
 
-      document.getElementById("app").innerHTML = `
-        <div class="label">Agent Q · Demo</div>
-        <div class="icon">🍫</div>
-        <h1>Lê o QR e entra no sorteio</h1>
-        <p>
-          Regista a tua presença nesta pequena experiência.
-          Vais receber um código para guardar até ao final do evento.
-        </p>
-        <button class="btn" onclick="registar()">Quero participar</button>
-        <button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>
-      `;
+      document.getElementById("app").innerHTML =
+        '<div class="label">Agent Q · Demo</div>' +
+        '<div class="icon">🍫</div>' +
+        '<h1>Lê o QR e entra no sorteio</h1>' +
+        '<p>Regista a tua presença nesta pequena experiência. Vais receber um código para guardar até ao final do evento.</p>' +
+        '<button class="btn" onclick="registar()">Quero participar</button>' +
+        '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
     }
 
     function renderLoading() {
-      document.getElementById("app").innerHTML = `
-        <div class="label">Agent Q · Demo</div>
-        <div class="icon">⏳</div>
-        <h1>A registar...</h1>
-        <p>Estamos a gerar o teu código.</p>
-      `;
+      document.getElementById("app").innerHTML =
+        '<div class="label">Agent Q · Demo</div>' +
+        '<div class="icon">⏳</div>' +
+        '<h1>A registar...</h1>' +
+        '<p>Estamos a gerar o teu código.</p>';
     }
 
     function renderCode(code) {
-      document.getElementById("app").innerHTML = `
-        <div class="label">Agent Q · Demo</div>
-        <div class="icon">🎟️</div>
-        <h1>Estás registado</h1>
-        <p>Guarda este código até ao final do evento.</p>
-
-        <div class="code-box">
-          <div class="code-label">O teu código</div>
-          <div class="code">${code}</div>
-          <div class="hint">
-            No final do evento, se o teu código tiver sido o escolhido,
-            vem ter com a equipa Agent Q para receberes o chocolate.
-          </div>
-        </div>
-
-        <div class="ok">Registo concluído.</div>
-
-        <button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>
-      `;
+      document.getElementById("app").innerHTML =
+        '<div class="label">Agent Q · Demo</div>' +
+        '<div class="icon">🎟️</div>' +
+        '<h1>Estás registado</h1>' +
+        '<p>Guarda este código até ao final do evento.</p>' +
+        '<div class="code-box">' +
+          '<div class="code-label">O teu código</div>' +
+          '<div class="code">' + code + '</div>' +
+          '<div class="hint">No final do evento, se o teu código tiver sido o escolhido, vem ter com a equipa Agent Q para receberes o chocolate.</div>' +
+        '</div>' +
+        '<div class="ok">Registo concluído.</div>' +
+        '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
     }
 
-    function renderError(message = "O registo não foi confirmado.") {
-      document.getElementById("app").innerHTML = `
-        <div class="label">Agent Q · Demo</div>
-        <div class="icon">⚠️</div>
-        <h1>Não foi possível registar</h1>
-        <p>Verifica a ligação à internet e tenta novamente.</p>
-        <div class="error">${message}</div>
-        <button class="btn-secondary" onclick="renderHome()">Voltar</button>
-        <button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>
-      `;
+    function renderError(message) {
+      document.getElementById("app").innerHTML =
+        '<div class="label">Agent Q · Demo</div>' +
+        '<div class="icon">⚠️</div>' +
+        '<h1>Não foi possível registar</h1>' +
+        '<p>Verifica a ligação à internet e tenta novamente.</p>' +
+        '<div class="error">' + (message || "O registo não foi confirmado.") + '</div>' +
+        '<button class="btn-secondary" onclick="renderHome()">Voltar</button>' +
+        '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
     }
 
     async function registar() {
@@ -332,7 +301,7 @@
       renderHome();
     }
 
-    renderHome();
+    document.addEventListener("DOMContentLoaded", renderHome);
   </script>
 </body>
 </html>
