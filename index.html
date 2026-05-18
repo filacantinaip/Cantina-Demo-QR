@@ -137,12 +137,12 @@
       display: block;
     }
 
-    .btn-secondary:hover {
+    .btn-dashboard {
       border-color: var(--accent2);
       color: var(--accent2);
     }
 
-    .btn-dashboard {
+    .btn-dashboard:hover {
       border-color: var(--accent2);
       color: var(--accent2);
     }
@@ -209,8 +209,8 @@
     const DASHBOARD_URL = "https://demo-chocolate-dashboard.streamlit.app/";
 
     const EVENT_ID = "demo_apresentacao_chocolate";
-    const STORAGE_TOKEN = "demo_chocolate_token_v5";
-    const STORAGE_CODE = "demo_chocolate_code_v5";
+    const STORAGE_TOKEN = "demo_chocolate_token_final";
+    const STORAGE_CODE = "demo_chocolate_code_final";
 
     function gerarToken() {
       return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
@@ -225,7 +225,7 @@
     }
 
     function dashboardButton() {
-      return '<a class="btn-secondary btn-dashboard" href="' + DASHBOARD_URL + '" target="_blank" rel="noopener noreferrer">Ver dashboard dos resultados</a>';
+      return '<a class="btn-secondary btn-dashboard" href="' + DASHBOARD_URL + '" target="_blank" rel="noopener noreferrer">📊 Ver dashboard dos resultados</a>';
     }
 
     function renderHome() {
@@ -233,7 +233,7 @@
       const code = localStorage.getItem(STORAGE_CODE);
 
       if (token && code) {
-        renderCode(code);
+        renderCode(code, true);
         return;
       }
 
@@ -243,8 +243,7 @@
         '<h1>Lê o QR e entra no sorteio</h1>' +
         '<p>Regista a tua presença nesta pequena experiência. Vais receber um código para guardar até ao final do evento.</p>' +
         '<button class="btn" onclick="registar()">Quero participar</button>' +
-        dashboardButton() +
-        '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
+        dashboardButton();
     }
 
     function renderLoading() {
@@ -255,7 +254,7 @@
         '<p>Estamos a gerar o teu código.</p>';
     }
 
-    function renderCode(code) {
+    function renderCode(code, recovered) {
       document.getElementById("app").innerHTML =
         '<div class="label">Agent Q · Demo</div>' +
         '<div class="icon">🎟️</div>' +
@@ -266,9 +265,8 @@
           '<div class="code">' + code + '</div>' +
           '<div class="hint">No final do evento, se o teu código tiver sido o escolhido, vem ter com a equipa Agent Q para receberes o chocolate.</div>' +
         '</div>' +
-        '<div class="ok">Registo concluído.</div>' +
-        dashboardButton() +
-        '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
+        '<div class="ok">' + (recovered ? 'Já tinhas um registo neste telemóvel.' : 'Registo concluído.') + '</div>' +
+        dashboardButton();
     }
 
     function renderError(message) {
@@ -279,11 +277,18 @@
         '<p>Verifica a ligação à internet e tenta novamente.</p>' +
         '<div class="error">' + (message || "O registo não foi confirmado.") + '</div>' +
         dashboardButton() +
-        '<button class="btn-secondary" onclick="renderHome()">Voltar</button>' +
-        '<button class="btn-secondary" onclick="resetLocal()">Reset / novo teste</button>';
+        '<button class="btn-secondary" onclick="renderHome()">Voltar</button>';
     }
 
     async function registar() {
+      const existingToken = localStorage.getItem(STORAGE_TOKEN);
+      const existingCode = localStorage.getItem(STORAGE_CODE);
+
+      if (existingToken && existingCode) {
+        renderCode(existingCode, true);
+        return;
+      }
+
       renderLoading();
 
       const token = gerarToken();
@@ -313,17 +318,11 @@
         localStorage.setItem(STORAGE_TOKEN, token);
         localStorage.setItem(STORAGE_CODE, code);
 
-        renderCode(code);
+        renderCode(code, false);
 
       } catch (e) {
         renderError();
       }
-    }
-
-    function resetLocal() {
-      localStorage.removeItem(STORAGE_TOKEN);
-      localStorage.removeItem(STORAGE_CODE);
-      renderHome();
     }
 
     document.addEventListener("DOMContentLoaded", renderHome);
